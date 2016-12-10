@@ -6,7 +6,7 @@ var chalk = require('chalk');
 var yeoman = require('yeoman-generator');
 
 // Internal
-var { componentName, date, templates } = require('../../common/helper');
+var { componentName, date, templates, templatize } = require('../../common/helper');
 
 module.exports = yeoman.Base.extend({
 
@@ -70,26 +70,17 @@ module.exports = yeoman.Base.extend({
   _create: function (props) {
     var data = this.data;
 
-    this.template('package.json',
-      data.name + '/package.json',
-      data
-    );
-
-    this.template('class.js',
-      data.name + '/' + data.name + '.js',
-      data
-    );
+    templatize(this, data, 'package.json');
+    templatize(this, data, 'class.js');
 
     // Do we want to use inline styles via radium `.js` ~ or ~ `.scss`
     var stylesheet = props.radium ? 'styles.js' : 'styles.scss';
-    this.template(stylesheet, data.name + '/' + stylesheet, data);
+    templatize(this, data, stylesheet);
 
     // Testing folder / stub
     if (props.addTests) {
-      this.template('test.js',
-        data.name + '/__test__/' + data.name + '.test.js',
-        data
-      );
+      templatize(this, data, 'test.js');
     }
+    addIncludeFiles(this, data);
   }
 });
